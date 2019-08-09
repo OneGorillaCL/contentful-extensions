@@ -10,7 +10,8 @@
 <body>
   <!-- Custom markup of the UI Extension -->
   <div class="cf-form-field">
-    <select type="text" class="cf-form-input">
+    <select class="cf-form-input">
+      <option value="" selected>Type</option>
       <option value="input">input</option>
       <option value="select">select</option>
       <option value="radio">radio</option>
@@ -35,7 +36,7 @@
       extensionsApi.window.startAutoResizer();
 
       var inputEl = document.querySelector('.cf-form-input');
-      cconsole.log('inputEl', inputEl);
+      console.log('inputEl', inputEl);
 
       //  The field this UI Extension is assigned to.
       var field = extensionsApi.field;
