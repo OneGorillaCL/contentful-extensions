@@ -1,0 +1,6 @@
+{
+  "id": "contentful-form-generator",
+  "name": "contentful-form-generator",
+  "srcdoc": "index.html",
+  "fieldTypes": ["Text"]
+}
