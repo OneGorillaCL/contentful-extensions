@@ -2,21 +2,5 @@
   "id": "at-form-field-type-selector",
   "name": "Form field type selector",
   "srcdoc": "index.html",
-  "fieldTypes": ["Symbol", "Text"],
-  "parameters": {
-    "instance": [
-      {
-        "id": "exampleParameter",
-        "type": "Symbol",
-        "name": "An example instance parameter"
-      }
-    ],
-    "installation": [
-      {
-        "id": "exampleParameter",
-        "type": "Symbol",
-        "name": "An example installation parameter"
-      }
-    ]
-  }
+  "fieldTypes": ["Symbol", "Text"]
 }

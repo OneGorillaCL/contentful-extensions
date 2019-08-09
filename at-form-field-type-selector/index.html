@@ -10,10 +10,13 @@
 <body>
   <!-- Custom markup of the UI Extension -->
   <div class="cf-form-field">
-    <input type="text" class="cf-form-input">
-    <div class="cf-form-hint">I am a UI Extension.</div>
-    <div class="cf-form-hint">Instance params: <span class="instance-param-value"></span></div>
-    <div class="cf-form-hint">Installation params: <span class="installation-param-value"></span></div>
+    <select type="text" class="cf-form-input">
+      <option value="input">input</option>
+      <option value="select">select</option>
+      <option value="radio">radio</option>
+      <option value="checkbox">checkbox</option>
+    </select>
+    <div class="cf-form-hint">Select type of form field.</div>
   </div>
 
   <!-- Custom logic of the UI Extension -->
@@ -48,12 +51,14 @@
 
       // Handler for external field value changes (e.g. when multiple authors are working on the same entry).
       function valueChangeHandler (value) {
+        console.log('valueChangeHandler', value);
         inputEl.value = value || '';
       }
 
       // Event handler for keyboard input.
       function keyboardInputHandler () {
         var value = inputEl.value;
+        console.log('keyboardInputHandler', value);
         if (typeof value !== 'string' || value === '') {
           field.removeValue();
         } else {
@@ -63,6 +68,7 @@
 
       // Event handler for window unload.
       function unloadHandler () {
+        console.log('unloadHandler');
         window.removeEventListener('onbeforeunload', unloadHandler);
         inputEl.removeEventListener('input', keyboardInputHandler);
         detachValueChangeHandler();
