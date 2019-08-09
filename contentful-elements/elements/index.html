@@ -1,16 +1,13 @@
-<!doctype html>
-<html lang="es">
-
-<head>
-    <meta charset="utf-8">
-    <title>contentful-form-generator</title>
-    <base href="/">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-</head>
-
-<body>
-    <contentful-form-generator></contentful-form-generator>
-    <script type="text/javascript" src="contentful-elements.js"></script>
-</body>
-
-</html>
+<contentful-form-generator></contentful-form-generator>
+<script>
+if ( !document.getElementById('customScriptTags') ) {
+  console.log( 'Insertando script' );
+  var s = document.createElement('script');
+  s.id = 'customScriptTags';
+  s.src = 'contentful-elements.js?v=14';
+  s.onload = function() {
+    console.log('script done');
+  };
+  document.body.appendChild(s);
+}
+</script>
