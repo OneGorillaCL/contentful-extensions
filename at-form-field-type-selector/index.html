@@ -27,6 +27,7 @@
     window.contentfulExtension.init(initExtension);
 
     function initExtension (extensionsApi) {
+      console.log('extensionsApi', extensionsApi);
       // "extensionsApi" is providing an interface documented here:
       // https://github.com/contentful/ui-extensions-sdk/blob/master/docs/ui-extensions-sdk-frontend.md
 
@@ -34,6 +35,7 @@
       extensionsApi.window.startAutoResizer();
 
       var inputEl = document.querySelector('.cf-form-input');
+      cconsole.log('inputEl', inputEl);
 
       //  The field this UI Extension is assigned to.
       var field = extensionsApi.field;
