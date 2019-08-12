@@ -1,0 +1,8 @@
+{
+  "id": "form-generator-ts",
+  "name": "form-generator-ts",
+  "srcdoc": "./build/index.html",
+  "fieldTypes": [
+    "Text"
+  ]
+}
