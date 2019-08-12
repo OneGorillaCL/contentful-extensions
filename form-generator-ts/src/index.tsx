@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { TextInput, Select, Option, Button } from '@contentful/forma-36-react-components';
+import { TextInput, Select, Option, Button, Table, TableBody, TableRow, TableHead, TableCell } from '@contentful/forma-36-react-components';
 import { init, FieldExtensionSDK } from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
@@ -24,12 +24,19 @@ enum FGFieldType {
   TEXTAREA = 'TEXTAREA'
 }
 
+interface FGFieldOption {
+  value?: string;
+  label: string;
+}
+
 interface FGField {
-  id? : string;
+  zendDesk? : string;
   name? : string;
+  label? : string;
   extraClassCss? : string;
   placeHolder? : string;
-  type : FGFieldType
+  type : FGFieldType;
+  options?: Array<FGFieldOption>;
 }
 
 interface FormGenerator {
@@ -65,50 +72,88 @@ export class App extends React.Component<AppProps, AppState> {
     // this.setState({ value: JSON.parse(value) });
   };
 
-  /*onChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = JSON.parse(e.currentTarget.value);
-    this.setState({ value });
+  updateContentField = async () => {
+    const value = JSON.stringify(this.state.fields);
+    console.log(`updateContentField value`, value);
     if (value) {
       await this.props.sdk.field.setValue(value);
     } else {
       await this.props.sdk.field.removeValue();
     }
-  };*/
+  };
+
+  updateFieldOnState = (idx: number, keyfield: string, value: any) => {
+    const { fields, newTypeField } = this.state;
+    console.log(`updateFieldOnState idx=${idx} keyfield=${keyfield} value=${value}`);
+    if ( fields && fields[idx] ) {
+      fields[idx][keyfield] = value;
+      this.setState({fields: fields, newTypeField: newTypeField});
+    }
+  }
 
   renderFormFields = () => {
     const { fields } = this.state;
     console.log('renderFormFields');
     return fields && fields.length > 0 && <>
-    <table>
-      <tbody>
-      <tr>
-        <th>
+    <Table className="table-container">
+      <TableHead>
+        <TableCell>
           Type
-        </th>
-        <th>
-          ID
-        </th>
-        <th>
+        </TableCell>
+        <TableCell>
+          name
+        </TableCell>
+        <TableCell>
+          label
+        </TableCell>
+        <TableCell>
+          zendDesk param
+        </TableCell>
+        <TableCell>
           extraClassCss
-        </th>
-      </tr>
-      {fields.map( (field: FGField) => {
-        return <tr>
-          <td>
-            {field.type || ''}
-          </td>
-          <td>
-            {field.id || ''}
-          </td>
-          <td>
-            {field.extraClassCss || ''}
-          </td>
-        </tr>
+        </TableCell>
+        <TableCell>
+          Options
+        </TableCell>
+      </TableHead>
+      <TableBody>
+      {fields.map( (field: FGField, index: number) => {
+        return <TableRow key={index}>
+          <TableCell>
+            {field.type}
+          </TableCell>
+          <TableCell>
+            <TextInput value={field.name || ''} onChange={ e => {
+              this.updateFieldOnState(index, 'name', e.target.value);
+            }} />
+          </TableCell>
+          <TableCell>
+            <TextInput value={field.label || ''} onChange={ e => {
+              this.updateFieldOnState(index, 'label', e.target.value);
+            }} />
+          </TableCell>
+          <TableCell>
+            <TextInput value={field.zendDesk || ''} onChange={ e => {
+              this.updateFieldOnState(index, 'zendDesk', e.target.value);
+            }} />
+          </TableCell>
+          <TableCell>
+            <TextInput value={field.extraClassCss || ''} onChange={ e => {
+              this.updateFieldOnState(index, 'extraClassCss', e.target.value);
+            }} />
+          </TableCell>
+          <TableCell>
+            {field.type && field.type === 'SELECT' && <>Options for select</>}
+            {field.type && field.type === 'RADIO' && <>Options for radio</>}
+            {field.type && field.type === 'CHECKBOX' && <>Options for checkbox</>}
+          </TableCell>
+        </TableRow>
       })}
-      </tbody>
-    </table>
+      </TableBody>
+    </Table>
     <Button onClick={ e => {
-      console.log('Button onClick e', e);
+      console.log('Button onClick fields', fields);
+      this.updateContentField();
     }}>Actualizar</Button>
     </>
     
@@ -125,6 +170,7 @@ export class App extends React.Component<AppProps, AppState> {
           newTypeField: e.target.value
         });
       }}>
+        <Option value=""> Select type </Option>
         <Option value="INPUT_TEXT">INPUT_TEXT</Option>
         <Option value="INPUT_EMAIL">INPUT_EMAIL</Option>
         <Option value="INPUT_NUMBER">INPUT_NUMBER</Option>
