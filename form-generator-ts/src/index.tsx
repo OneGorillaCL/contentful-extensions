@@ -1,6 +1,6 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { render } from 'react-dom';
-import { TextInput, Select, Option, Button, Table, TableBody, TableRow, TableHead, TableCell } from '@contentful/forma-36-react-components';
+import { TextInput, Select, Option, Button, Table, TableBody, TableRow, TableHead, TableCell, TextLink, Modal, Checkbox } from '@contentful/forma-36-react-components';
 import { init, FieldExtensionSDK } from 'contentful-ui-extensions-sdk';
 import '@contentful/forma-36-react-components/dist/styles.css';
 import './index.css';
@@ -11,7 +11,11 @@ interface AppProps {
 
 interface AppState {
   fields: Array<FGField>;
-  newTypeField?: FGFieldType
+  newTypeField?: FGFieldType;
+  modal: {
+    showModal: Boolean;
+    index?: number;
+  }
 }
 
 enum FGFieldType {
@@ -37,10 +41,7 @@ interface FGField {
   placeHolder? : string;
   type : FGFieldType;
   options?: Array<FGFieldOption>;
-}
-
-interface FormGenerator {
-  fields: Array<FGField>
+  required?: boolean;
 }
 
 export class App extends React.Component<AppProps, AppState> {
@@ -48,7 +49,10 @@ export class App extends React.Component<AppProps, AppState> {
     super(props);
     console.log( 'props.sdk.field.getValue', ( (props.sdk.field.getValue() ) ? true : false ) );
     this.state = {
-      fields: ( ( props.sdk.field.getValue() ) ? JSON.parse( props.sdk.field.getValue() ) : [] )
+      fields: ( ( props.sdk.field.getValue() ) ? JSON.parse( props.sdk.field.getValue() ) : [] ),
+      modal: {
+        showModal : false
+      }
     };
   }
 
@@ -83,18 +87,31 @@ export class App extends React.Component<AppProps, AppState> {
   };
 
   updateFieldOnState = (idx: number, keyfield: string, value: any) => {
-    const { fields, newTypeField } = this.state;
+    const { fields, newTypeField, modal } = this.state;
     console.log(`updateFieldOnState idx=${idx} keyfield=${keyfield} value=${value}`);
     if ( fields && fields[idx] ) {
       fields[idx][keyfield] = value;
-      this.setState({fields: fields, newTypeField: newTypeField});
+      this.setState({fields, newTypeField, modal});
     }
   }
 
+  deleteFieldOnState = (idx: number) => {
+    const { fields, newTypeField, modal } = this.state;
+    fields.splice(idx, 1);
+    this.setState({fields, modal, newTypeField: newTypeField});
+  }
+
   renderFormFields = () => {
-    const { fields } = this.state;
+    const { fields, modal, newTypeField  } = this.state;
     console.log('renderFormFields');
     return fields && fields.length > 0 && <>
+    <div>
+      <Modal title="Centered modal" isShown={modal.showModal === true} onClose={() => {
+        this.setState({fields, modal : {showModal : false}, newTypeField});
+      }} shouldCloseOnOverlayClick={false} shouldCloseOnEscapePress={false}>
+        aaaaaaaaaaaaaa
+      </Modal>
+    </div>
     <Table className="table-container">
       <TableHead>
         <TableCell>
@@ -110,7 +127,10 @@ export class App extends React.Component<AppProps, AppState> {
           zendDesk param
         </TableCell>
         <TableCell>
-          extraClassCss
+          extra className
+        </TableCell>
+        <TableCell>
+          required
         </TableCell>
         <TableCell>
           Options
@@ -120,7 +140,10 @@ export class App extends React.Component<AppProps, AppState> {
       {fields.map( (field: FGField, index: number) => {
         return <TableRow key={index}>
           <TableCell>
-            {field.type}
+            {field.type} <br />
+            <TextLink linkType={'negative'} onClick={ e => {
+              this.deleteFieldOnState(index);
+            }}>Delete</TextLink>
           </TableCell>
           <TableCell>
             <TextInput value={field.name || ''} onChange={ e => {
@@ -143,7 +166,17 @@ export class App extends React.Component<AppProps, AppState> {
             }} />
           </TableCell>
           <TableCell>
-            {field.type && field.type === 'SELECT' && <>Options for select</>}
+            <Checkbox labelText={'Required?'} checked={field.required || false} onChange={ e => {
+              console.log('Checkbox' , e.target.checked)
+              this.updateFieldOnState(index, 'required', e.target.checked);
+            }} />
+          </TableCell>
+          <TableCell>
+            {field.type && field.type === 'SELECT' && <>
+              <TextLink linkType={'secondary'} onClick={ e => {
+                this.setState({fields: this.state.fields, modal : {showModal: true, index: index}})
+              }}>Options</TextLink>
+            </>}
             {field.type && field.type === 'RADIO' && <>Options for radio</>}
             {field.type && field.type === 'CHECKBOX' && <>Options for checkbox</>}
           </TableCell>
@@ -162,12 +195,13 @@ export class App extends React.Component<AppProps, AppState> {
   render = () => {
     return <>
       {this.renderFormFields()}
-      <hr />
+      {this.state.fields && this.state.fields.length > 0 && <hr />}
       <Select onChange={ e => {
         console.log('Select onChange e', e.target.value);
         this.setState({
           fields: this.state.fields,
-          newTypeField: e.target.value
+          newTypeField: e.target.value,
+          modal: this.state.modal
         });
       }}>
         <Option value=""> Select type </Option>
@@ -186,11 +220,14 @@ export class App extends React.Component<AppProps, AppState> {
             type: this.state.newTypeField
           }
           this.setState({
-            fields: [...this.state.fields, newField]
+            fields: [...this.state.fields, newField],
+            modal: this.state.modal
           });
           console.log('this.state', this.state);
         }
       }}>Nuevo field</Button>
+
+      <hr />
     </>;
   };
 }
